@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import time
 
 import zipfile
 
@@ -19,6 +20,7 @@ class Report:
         self.sections = []
         for section in self.layout['sections']:
             self.sections.append(Section.Section(self, section))
+        self.ordinal_counter = len(self.sections) - 1
 
     def publish_pbix(self, save_file_location):
         section_json = []
@@ -46,3 +48,14 @@ class Report:
 
     def get_sections(self):
         return self.sections
+
+    def add_section(self, display_name, *, width=1280, height=720):
+        section_json = {'name': "ReportSection" + str(time.time_ns()), 'displayName': display_name, 'filters': [],
+                        'ordinal': self.ordinal_counter, 'visualContainers': [], 'config': "{}", 'displayOption': 1,
+                        'width': width, 'height': height}
+        self.ordinal_counter += 1
+        new_section = Section.Section(self, section_json)
+        self.sections.append(new_section)
+        return new_section
+
+
