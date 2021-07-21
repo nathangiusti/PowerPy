@@ -8,6 +8,12 @@ Current supported Operations
 
 Report:
  - Add Section
+ - Get Sections
 
 Section
  - Change display name
+ - Get visuals by type
+
+Visual
+ - Get visual type
+ - Set slicer value
