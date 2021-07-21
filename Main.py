@@ -6,6 +6,9 @@ def main():
     report.add_section('My new section')
     sections = report.get_sections()
     sections[0].rename_section('I did it')
+    section = report.get_sections()[0]
+    slicer = section.get_visuals_by_type('slicer')[0]
+    slicer.set_slicer_value('Zarya')
     report.publish_pbix('PBIX/MyNewPBIX.pbix')
 
 

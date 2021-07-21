@@ -18,7 +18,8 @@ def main():
     for section in data['sections']:
         for visual_container in section['visualContainers']:
             for key in ['config', 'filters', 'query', 'dataTransforms']:
-                visual_container[key] = json.loads(visual_container[key])
+                if key in visual_container.keys():
+                    visual_container[key] = json.loads(visual_container[key])
     with open(output_path, "w") as f:
         json.dump(data, f, indent=4)
 

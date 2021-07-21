@@ -1,6 +1,4 @@
 import json
-import os
-import shutil
 import time
 
 import zipfile
@@ -10,46 +8,38 @@ import Section
 
 class Report:
 
-    def __init__(self, power_bi_file_location, working_folder='temp'):
-        file_name = os.path.splitext(os.path.basename(power_bi_file_location))[0]
-        self.folder = working_folder + '/' + file_name
-        with zipfile.ZipFile(power_bi_file_location, 'r') as zip_ref:
-            zip_ref.extractall(self.folder)
-        with open(self.folder + '/Report/Layout', encoding='utf-16-le') as f:
-            self.layout = json.loads(f.readlines()[0])
+    def __init__(self, power_bi_file_location: str):
+        self.zip_file = zipfile.ZipFile(power_bi_file_location)
+        self.layout = json.loads(self.zip_file.read('Report/Layout').decode('utf-16-le'))
+
         self.sections = []
         for section in self.layout['sections']:
             self.sections.append(Section.Section(self, section))
         self.ordinal_counter = len(self.sections) - 1
 
-    def publish_pbix(self, save_file_location):
+    def publish_pbix(self, save_file_location: str) -> None:
         section_json = []
         for section in self.sections:
-            section_json.append(section.section_json)
+            section_json.append(section.export_section_json())
         self.layout['sections'] = section_json
-        with open(self.folder + '/Report/Layout', "w", encoding='utf-16-le') as f:
-            json.dump(self.layout, f)
-        dir = os.path.splitext(save_file_location)[0]
-        ext = os.path.splitext(save_file_location)[1]
-        with open(self.folder + '/[Content_Types].xml') as f:
-            content = f.readlines()[0]
-            content = content.replace("<Override PartName=\"/SecurityBindings\" ContentType=\"\" />", "")
 
-        with open(self.folder + '/[Content_Types].xml', "w") as f:
-            f.write(content)
+        with zipfile.ZipFile(save_file_location, 'w') as zout:
+            for item in self.zip_file.infolist():
+                if item.filename == 'Report/Layout':
+                    zout.writestr(item, json.dumps(self.layout).encode('utf-16-le'))
+                elif item.filename == '[Content_Types].xml':
+                    content = self.zip_file.read(item.filename).decode('utf-8')
+                    content = content.replace("<Override PartName=\"/SecurityBindings\" ContentType=\"\" />", "")
+                    zout.writestr(item, content)
+                elif item.filename == 'SecurityBindings':
+                    continue
+                else:
+                    zout.writestr(item, self.zip_file.read(item.filename))
 
-        os.remove(self.folder + "/SecurityBindings")
-
-        shutil.make_archive(dir, 'zip', self.folder)
-        ext = '.pbix' if len(ext) == 0 else ext
-        if os.path.exists(dir + ext):
-            os.remove(dir + ext)
-        os.rename(dir + ".zip", dir + ext)
-
-    def get_sections(self):
+    def get_sections(self) -> [Section.Section]:
         return self.sections
 
-    def add_section(self, display_name, *, width=1280, height=720):
+    def add_section(self, display_name: str, *, width=1280, height=720) -> None:
         section_json = {'name': "ReportSection" + str(time.time_ns()), 'displayName': display_name, 'filters': [],
                         'ordinal': self.ordinal_counter, 'visualContainers': [], 'config': "{}", 'displayOption': 1,
                         'width': width, 'height': height}
