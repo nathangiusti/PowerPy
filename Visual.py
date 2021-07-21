@@ -1,4 +1,6 @@
+import copy
 import json
+
 import Section
 
 
@@ -12,7 +14,7 @@ class Visual:
                 self.visual_json[key] = json.loads(self.visual_json[key])
 
     def export_visual_json(self) -> json:
-        return_json = self.visual_json
+        return_json = copy.deepcopy(self.visual_json)
         for key in ['config', 'filters', 'query', 'dataTransforms']:
             if key in return_json.keys():
                 return_json[key] = json.dumps(return_json[key])

@@ -2,6 +2,7 @@ import json
 import sys
 import zipfile
 
+# Extracts the layout file from a pbix and pretty prints it as JSON. Useful for version control.
 # Usage
 # python ExportToJson.py [pbix file location] [output file location]
 # Ex: python ExportToJson.py Folder/MyPbixFile.pbix MyReportJson.json

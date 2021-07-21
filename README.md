@@ -9,6 +9,7 @@ Current supported Operations
 Report:
  - Add Section
  - Get Sections
+ - Duplicate Section
 
 Section
  - Change display name

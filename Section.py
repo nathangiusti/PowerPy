@@ -1,3 +1,4 @@
+import copy
 import json
 
 import Report
@@ -29,6 +30,6 @@ class Section:
         for visual in self.visuals:
             ret_json.append(visual.export_visual_json())
         self.section_json['visualContainers'] = ret_json
-        return self.section_json
+        return copy.deepcopy(self.section_json)
 
 

@@ -1,3 +1,4 @@
+import copy
 import json
 import time
 
@@ -39,13 +40,28 @@ class Report:
     def get_sections(self) -> [Section.Section]:
         return self.sections
 
-    def add_section(self, display_name: str, *, width=1280, height=720) -> None:
-        section_json = {'name': "ReportSection" + str(time.time_ns()), 'displayName': display_name, 'filters': [],
-                        'ordinal': self.ordinal_counter, 'visualContainers': [], 'config': "{}", 'displayOption': 1,
-                        'width': width, 'height': height}
+    def add_section_from_json(self, section_json: json) -> Section:
+        section_json = copy.deepcopy(section_json)
+        if 'id' in section_json and section_json['name'] != 'ReportSection':
+            del section_json['id']
         self.ordinal_counter += 1
         new_section = Section.Section(self, section_json)
         self.sections.append(new_section)
         return new_section
+
+    def add_section(self, display_name: str, *, width=1280, height=720) -> None:
+        section_json = {'name': "ReportSection" + str(time.time_ns()), 'displayName': display_name, 'filters': [],
+                        'ordinal': self.ordinal_counter, 'visualContainers': [], 'config': "{}", 'displayOption': 1,
+                        'width': width, 'height': height}
+        return self.add_section_from_json(section_json)
+
+    def duplicate_section(self, section: Section, section_title: str) -> Section:
+        section_json = section.export_section_json()
+        section_json['name'] = "ReportSection" + str(time.time_ns())
+        self.ordinal_counter += 1
+        section_json['ordinal'] = self.ordinal_counter
+        new_section = Section.Section(self, section_json)
+        new_section.rename_section(section_title)
+        return self.add_section_from_json(new_section.export_section_json())
 
 
