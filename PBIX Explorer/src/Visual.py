@@ -10,7 +10,7 @@ class Visual:
         self.parent = parent
         self.visual_json = visual_json
         for key in ['config', 'filters', 'query', 'dataTransforms']:
-            if key in self.visual_json.keys():
+            if key in self.visual_json.keys() and isinstance(self.visual_json[key], str):
                 self.visual_json[key] = json.loads(self.visual_json[key])
 
     def export_visual_json(self) -> json:

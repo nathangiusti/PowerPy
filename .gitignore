@@ -114,5 +114,6 @@ dmypy.json
 .pyre/
 
 .idea/
-PBIX/
+PBIX Explorer/PBIX
 temp/
+PBIX Explorer/TestFiles/
