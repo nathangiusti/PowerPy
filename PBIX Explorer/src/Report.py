@@ -16,7 +16,6 @@ class Report:
         self.ordinal_counter = 0
         self.init_report(json.loads(self.zip_file.read('Report/Layout').decode('utf-16-le')))
         self.connection = self.zip_file.read('Connections')
-        print("done")
 
     def init_report(self, layout_json):
         self.layout = layout_json
@@ -73,11 +72,9 @@ class Report:
         new_section.rename_section(section_title)
         return self.add_section_from_json(new_section.export_section_json())
 
-    def rename_table(self, old_table_name, new_table_name):
-        json_str = json.dumps(self.layout)
-        json_str = json_str.replace(old_table_name + '.', new_table_name + '.')
-        json_str = json_str.replace('"Entity": "{}"'.format(old_table_name), '"Entity": "{}"'.format(new_table_name))
-        self.init_report(json.loads(json_str))
+    def rename_field(self, old_value, new_value):
+        for section in self.sections:
+            section.rename_field(old_value, new_value)
 
 
 

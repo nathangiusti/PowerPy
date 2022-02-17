@@ -32,4 +32,8 @@ class Section:
         self.section_json['visualContainers'] = ret_json
         return copy.deepcopy(self.section_json)
 
+    def rename_field(self, new_value, old_value):
+        for visual in self.visuals:
+            visual.rename_field(new_value, old_value)
+
 

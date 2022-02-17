@@ -32,4 +32,6 @@ class Visual:
             'Condition']['In']['Values'][0][0]['Literal']['Value'] = value
         self.visual_json['config']['singleVisual']['objects']['general'][0]['properties']['filter']['filter']['Where'][0][
             'Condition']['In']['Values'][0][0]['Literal']['Value'] = value
-        print('done')
+
+    def rename_field(self, old_value, new_value):
+            # TODO: Actually write this code
